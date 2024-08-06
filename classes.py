@@ -32,18 +32,23 @@ class square():
     def setPiece(self,piece):
         self.piece = piece
 
-class piece():
+class piece(pygame.sprite.Sprite):
     def __init__(self,type,color,image,pos):
+        pygame.sprite.Sprite.__init__(self)
         self.type = type
         self.color = color
         temp = pygame.image.load(image).convert_alpha()
         self.image = pygame.transform.scale(temp,(65,65))
+        self.rect = self.image.get_rect()
         self.captured = False
         self.pos = pos
         self.moves = 0
         self.possibleMoves = []
         self.availableMoves = []
         self.setPossibleMoves()
+
+    def posUpdate(self,x,y):
+        self.rect.center = (x,y)
 
     def setPossibleMoves(self):
         if self.type == "pawn":
@@ -56,14 +61,11 @@ class piece():
             else:
                 self.possibleMoves = [(direction,0)]
         if self.type == "rook":
-            for i in range(8-self.pos[0]):
+            for i in range(7):
                 self.possibleMoves.append((i+1,0))
-            for j in range(8-self.pos[1]):
-                self.possibleMoves.append((0,j+1))
-            for i in range(self.pos[0]-1):
+                self.possibleMoves.append((0,i+1))
                 self.possibleMoves.append((i-7,0))
-            for j in range(self.pos[1]):
-                self.possibleMoves.append((0,-j))
+                self.possibleMoves.append((0,-i))
         if self.type == "knight":
             for i in [-1,1]:
                 for j in [-2,2]:
@@ -72,25 +74,21 @@ class piece():
                 for j in [-1,1]:
                     self.possibleMoves.append((i,j))
         if self.type == "bishop":
-            for i in range(8-self.pos[0]):
+            for i in range(7):
                 self.possibleMoves.append((i+1,i+1))
                 self.possibleMoves.append((i+1,-(i+1)))
-            for i in range(self.pos[0]-1):
-                self.possibleMoves.append((i-7,i-7))
-                self.possibleMoves.append((i-7,-(i-7)))
+                self.possibleMoves.append((-(i+1),-(i+1)))
+                self.possibleMoves.append((-(i+1),i+1))
         if self.type == "queen":
-            for i in range(8-self.pos[0]):
+            for i in range(7):
+                self.possibleMoves.append((i+1,0))
+                self.possibleMoves.append((0,i+1))
+                self.possibleMoves.append((i-7,0))
+                self.possibleMoves.append((0,-i))
                 self.possibleMoves.append((i+1,i+1))
                 self.possibleMoves.append((i+1,-(i+1)))
-                self.possibleMoves.append((i+1,0))
-            for i in range(self.pos[0]-1):
-                self.possibleMoves.append((i-7,i-7))
-                self.possibleMoves.append((i-7,-(i-7)))
-                self.possibleMoves.append((i-7,0))
-            for j in range(8-self.pos[1]):
-                self.possibleMoves.append((0,j+1))
-            for j in range(self.pos[1]):
-                self.possibleMoves.append((0,-j))
+                self.possibleMoves.append((-(i+1),-(i+1)))
+                self.possibleMoves.append((-(i+1),i+1))
         if self.type == "king":
             self.possibleMoves = [(1,0),(1,1),(0,1),(-1,1),(-1,0),(-1,-1),(0,-1),(1,-1)]
             
